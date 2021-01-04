@@ -17,10 +17,10 @@ if __name__ == '__main__':
 
         print(f'You worked for {hours} hours and {minutes} minutes')
         quality = input('How focused were you on the work? (rate out of 5): ')
-        date = date.today().strftime("%B %d, %Y")
+        today = date.today().strftime("%B %d, %Y")
 
         with open('work_log.txt', 'a') as f:
-            f.write(date + '\n')
+            f.write(today + '\n')
             f.write(f'Worked on: {project_name}\n')
             if hours == 0:
                 f.write(f'Time spent: {minutes} minutes\n')
