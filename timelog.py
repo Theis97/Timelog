@@ -1,6 +1,26 @@
 import distutils.util
+import os.path
+import csv
 import time
 from datetime import date
+
+def save_as_csv(project_name, hours, minutes, quality):
+    if not os.path.isfile('work_log.csv'):
+        with open('work_log.csv', 'x', newline='') as file:
+            csv_writer = csv.writer(file)
+            csv_writer.writerow(['Project Name', 'Date', 'Time Spent', 'Quality'])
+
+    today = date.today().strftime("%B %d, %Y")
+    time_spent = ''
+    if hours == 0:
+        time_spent += f'{minutes} minutes'
+    else:
+        time_spent += f'{hours} hours {minutes} minutes'
+
+    row = [project_name, today, time_spent, quality]
+    with open('work_log.csv', 'a', newline='') as file:
+        csv_writer = csv.writer(file)
+        csv_writer.writerow(row)
 
 
 def save_as_txt(project_name, hours, minutes, quality):
@@ -32,5 +52,6 @@ if __name__ == '__main__':
         quality = input('How focused were you on the work? (rate out of 5): ')
 
         save_as_txt(project_name, hours, minutes, quality)
+        save_as_csv(project_name, hours, minutes, quality)
 
         keep_working = distutils.util.strtobool(input('Would you like to work on something else now? '))
