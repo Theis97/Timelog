@@ -54,4 +54,9 @@ if __name__ == '__main__':
         save_as_txt(project_name, hours, minutes, quality)
         save_as_csv(project_name, hours, minutes, quality)
 
-        keep_working = distutils.util.strtobool(input('Would you like to work on something else now? '))
+        while True:
+            try:
+                keep_working = distutils.util.strtobool(input('Would you like to work on something else now?'))
+                break
+            except ValueError:
+                print('Please answer \'yes\' or \'no\'')
