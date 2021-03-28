@@ -1,45 +1,62 @@
+import configparser
 import distutils.util
 import os.path
 import csv
 import time
 from datetime import date
 
-def save_as_csv(project_name, hours, minutes, quality):
-    if not os.path.isfile('work_log.csv'):
-        with open('work_log.csv', 'x', newline='') as file:
+
+def save_as_csv(config, project_name, start_date, hours, minutes, quality):
+    output_file = config['General']['filename'] + '.csv'
+    if not os.path.isfile(output_file):
+        with open(output_file, 'x', newline='') as file:
             csv_writer = csv.writer(file)
-            csv_writer.writerow(['Project Name', 'Date', 'Time Spent', 'Quality'])
+            if config.getboolean('General', 'record_quality'):
+                csv_writer.writerow(['Project Name', 'Date Started', 'Hours', 'Minutes', 'Quality'])
+            else:
+                csv_writer.writerow(['Project Name', 'Date Started', 'Hours', 'Minutes'])
 
-    today = date.today().strftime("%B %d, %Y")
-    time_spent = ''
-    if hours == 0:
-        time_spent += f'{minutes} minutes'
+    if config.getboolean('General', 'record_quality'):
+        row = [project_name, start_date, hours, minutes, quality]
     else:
-        time_spent += f'{hours} hours {minutes} minutes'
-
-    row = [project_name, today, time_spent, quality]
-    with open('work_log.csv', 'a', newline='') as file:
+        row = [project_name, start_date, hours, minutes]
+    with open(output_file, 'a', newline='') as file:
         csv_writer = csv.writer(file)
         csv_writer.writerow(row)
 
 
-def save_as_txt(project_name, hours, minutes, quality):
-    today = date.today().strftime("%B %d, %Y")
-    with open('work_log.txt', 'a') as f:
-        f.write(today + '\n')
+def save_as_txt(config, project_name, start_date, hours, minutes, quality):
+    output_file = config['General']['filename'] + '.txt'
+    with open(output_file, 'a') as f:
+        f.write(start_date + '\n')
         f.write(f'Worked on: {project_name}\n')
         if hours == 0:
             f.write(f'Time spent: {minutes} minutes\n')
         else:
             f.write(f'Time spent: {hours} hours, {minutes} minutes\n')
-        f.write(f'Quality rating: {quality} out of 5\n\n')
+        if config.getboolean('General', 'record_quality'):
+            f.write(f'Quality rating: {quality} out of 5\n\n')
 
 
 if __name__ == '__main__':
+    config = configparser.ConfigParser()
+    if not os.path.isfile('config.ini'):
+        config['General'] = {
+            'filename': 'log',
+            'csv': 'yes',
+            'txt': 'no',
+            'record_quality': 'no'
+        }
+        with open('config.ini', 'x') as config_file:
+            config.write(config_file)
+    else:
+        config.read('config.ini')
+
     keep_working = True
     while keep_working:
         project_name = input('Enter what you will work on to begin recording your time: ')
         start = time.time()
+        start_date = date.today().strftime("%B %d, %Y")
 
         input('Hit enter again when you are done working')
         end = time.time()
@@ -49,10 +66,15 @@ if __name__ == '__main__':
         hours = round(seconds // 3600)
 
         print(f'You worked for {hours} hours and {minutes} minutes')
-        quality = input('How focused were you on the work? (rate out of 5): ')
+        if config.getboolean('General', 'record_quality'):
+            quality = input('How focused were you on the work? (rate out of 5): ')
+        else:
+            quality = -1
 
-        save_as_txt(project_name, hours, minutes, quality)
-        save_as_csv(project_name, hours, minutes, quality)
+        if config.getboolean('General', 'txt'):
+            save_as_txt(config, project_name, start_date, hours, minutes, quality)
+        if config.getboolean('General', 'csv'):
+            save_as_csv(config, project_name, start_date, hours, minutes, quality)
 
         while True:
             try:
