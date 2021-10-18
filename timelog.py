@@ -20,9 +20,17 @@ def save_as_csv(config, project_name, start_date, hours, minutes, quality):
         row = [project_name, start_date, hours, minutes, quality]
     else:
         row = [project_name, start_date, hours, minutes]
-    with open(output_file, 'a', newline='') as file:
-        csv_writer = csv.writer(file)
-        csv_writer.writerow(row)
+
+    try:
+        with open(output_file, 'a', newline='') as file:
+            csv_writer = csv.writer(file)
+            csv_writer.writerow(row)
+            print('Successfully recorded time in', output_file)
+    except IOError:
+        print('Unable to open file. Please check if this file is being used by another program')
+        input('Hit Enter to retry when ready')
+        save_as_csv(config, project_name, start_date, hours, minutes, quality)
+
 
 
 def save_as_txt(config, project_name, start_date, hours, minutes, quality):
@@ -78,7 +86,7 @@ if __name__ == '__main__':
 
         while True:
             try:
-                keep_working = distutils.util.strtobool(input('Would you like to work on something else now?'))
+                keep_working = distutils.util.strtobool(input('Would you like to work on something else now? '))
                 break
             except ValueError:
                 print('Please answer \'yes\' or \'no\'')
