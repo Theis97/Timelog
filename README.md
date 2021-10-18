@@ -4,7 +4,11 @@ A simple script to help keep track of work time.
 # How To Use
 `python timelog.py`
 
-Work sessions will be recorded in `work_log.txt` and `work_log.csv`
+Configuration options can be set in `config.ini`.
+The currently available options allow you to:
+- Set the filename for the output file(s)
+- Toggle whether to output a csv and/or txt file
+- Toggle whether to ask for & log quality ratings
 
-# Planned Features
-* Configuration options
+# Planned Updates
+- Bug fixes
