@@ -1,5 +1,4 @@
 import configparser
-import distutils.util
 import os.path
 import csv
 import time
@@ -85,8 +84,12 @@ if __name__ == '__main__':
             save_as_csv(config, project_name, start_date, hours, minutes, quality)
 
         while True:
-            try:
-                keep_working = distutils.util.strtobool(input('Would you like to work on something else now? '))
+            response = input('Would you like to work on something else now? ')
+            if response.lower() in ['y', 'yes', 'true']:
+                keep_working = True
                 break
-            except ValueError:
+            elif response.lower() in ['n', 'no', 'false']:
+                keep_working = False
+                break
+            else:
                 print('Please answer \'yes\' or \'no\'')
